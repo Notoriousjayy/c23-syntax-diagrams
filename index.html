@@ -1,0 +1,65 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>C (C23) Syntax – Railroad Diagrams</title>
+
+  <!-- Library CSS (optional but recommended) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@prantlf/railroad-diagrams@1.0.1/railroad-diagrams.css" />
+
+  <style>
+    :root { --maxw: 1200px; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
+    header { padding: 24px 16px; border-bottom: 1px solid #ddd; }
+    main { max-width: var(--maxw); margin: 0 auto; padding: 16px; }
+    nav { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+    nav a { text-decoration: none; border: 1px solid #ccc; padding: 6px 10px; border-radius: 8px; color: #111; }
+    section { padding: 18px 0; border-top: 1px solid #eee; }
+    .rule { margin: 14px 0 22px; }
+    .rule h3 { margin: 0 0 8px; font-size: 16px; font-weight: 650; }
+    .rule .svgwrap { overflow-x: auto; padding-bottom: 6px; }
+    footer { padding: 16px; border-top: 1px solid #ddd; color: #444; font-size: 13px; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1 style="margin:0;">C (C23) Language Syntax – Railroad Diagrams</h1>
+    <div style="margin-top:8px; color:#444;">
+      Rendered from a diagram-friendly transcription of Annex A–style grammar rules (left recursion removed where needed).
+    </div>
+    <nav>
+      <a href="#lexical">Lexical</a>
+      <a href="#expressions">Expressions</a>
+      <a href="#declarations">Declarations</a>
+      <a href="#statements">Statements</a>
+      <a href="#external">External Definitions</a>
+      <a href="#preprocessor">Preprocessing</a>
+    </nav>
+  </header>
+
+  <main id="app">
+    <section id="lexical"><h2>Lexical Grammar</h2><div data-section="lexical"></div></section>
+    <section id="expressions"><h2>Expressions</h2><div data-section="expressions"></div></section>
+    <section id="declarations"><h2>Declarations</h2><div data-section="declarations"></div></section>
+    <section id="statements"><h2>Statements</h2><div data-section="statements"></div></section>
+    <section id="external"><h2>External Definitions</h2><div data-section="external"></div></section>
+    <section id="preprocessor"><h2>Preprocessing Directives</h2><div data-section="preprocessor"></div></section>
+  </main>
+
+  <footer>
+    Tips: If diagrams don’t render when opening as a file, serve with <code>python -m http.server</code>.
+  </footer>
+
+  <script type="module">
+    import { renderAllSections } from "./c23-syntax-diagrams.mjs";
+
+    const root = document.getElementById("app");
+    renderAllSections(root);
+  </script>
+</body>
+</html>
+
