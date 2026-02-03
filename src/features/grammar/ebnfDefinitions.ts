@@ -234,10 +234,6 @@ export const EBNF_DEFINITIONS: Record<RuleName, string> = {
     struct-or-union attribute-specifier-sequence_opt identifier_opt { member-declaration-list }
     struct-or-union attribute-specifier-sequence_opt identifier`,
 
-  "struct-or-union": `struct-or-union:
-    struct
-    union`,
-
   "member-declaration-list": `member-declaration-list:
     member-declaration
     member-declaration-list member-declaration`,
@@ -249,14 +245,6 @@ export const EBNF_DEFINITIONS: Record<RuleName, string> = {
   "specifier-qualifier-list": `specifier-qualifier-list:
     type-specifier-qualifier attribute-specifier-sequence_opt
     type-specifier-qualifier specifier-qualifier-list`,
-
-  "member-declarator-list": `member-declarator-list:
-    member-declarator
-    member-declarator-list , member-declarator`,
-
-  "member-declarator": `member-declarator:
-    declarator
-    declarator_opt : constant-expression`,
 
   "enum-specifier": `enum-specifier:
     enum attribute-specifier-sequence_opt identifier_opt enum-type-specifier_opt { enumerator-list }
@@ -271,19 +259,12 @@ export const EBNF_DEFINITIONS: Record<RuleName, string> = {
     enumeration-constant attribute-specifier-sequence_opt
     enumeration-constant attribute-specifier-sequence_opt = constant-expression`,
 
-  "enum-type-specifier": `enum-type-specifier:
-    : specifier-qualifier-list`,
-
   "atomic-type-specifier": `atomic-type-specifier:
     _Atomic ( type-name )`,
 
   "typeof-specifier": `typeof-specifier:
     typeof ( typeof-specifier-argument )
     typeof_unqual ( typeof-specifier-argument )`,
-
-  "typeof-specifier-argument": `typeof-specifier-argument:
-    expression
-    type-name`,
 
   "type-qualifier": `type-qualifier:
     const
@@ -383,11 +364,6 @@ export const EBNF_DEFINITIONS: Record<RuleName, string> = {
     expression-statement
     attribute-specifier-sequence_opt primary-block
     attribute-specifier-sequence_opt jump-statement`,
-
-  "primary-block": `primary-block:
-    compound-statement
-    selection-statement
-    iteration-statement`,
 
   "compound-statement": `compound-statement:
     { block-item-list_opt }`,
@@ -510,4 +486,11 @@ export const EBNF_DEFINITIONS: Record<RuleName, string> = {
  */
 export function getEbnfDefinition(name: RuleName): string | undefined {
   return EBNF_DEFINITIONS[name];
+}
+
+/**
+ * Get all EBNF rule names for grammar coverage checking.
+ */
+export function getEbnfRuleNames(): string[] {
+  return Object.keys(EBNF_DEFINITIONS);
 }

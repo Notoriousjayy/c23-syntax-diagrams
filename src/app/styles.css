@@ -44,10 +44,105 @@ nav a:hover {
   border-color: #999;
 }
 
-section {
-  padding: 18px 0;
+/* ===== Collapsible Sections ===== */
+
+.grammar-section {
+  padding: 0;
   border-top: 1px solid #eee;
 }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.section-header:hover {
+  background: #f8f8f8;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.4em;
+}
+
+.section-chevron {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+  color: #666;
+}
+
+.section-chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.rule-count {
+  color: #666;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.section-content {
+  padding: 0 8px 16px;
+}
+
+/* ===== Toolbar ===== */
+
+.toolbar {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.toolbar input {
+  width: min(480px, 100%);
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.toolbar input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.toolbar-btn {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  color: #333;
+  transition: all 0.15s ease;
+}
+
+.toolbar-btn:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.toolbar-btn:active {
+  background: #eee;
+}
+
+/* ===== Rule Styles ===== */
 
 .rule {
   margin: 14px 0 22px;
@@ -80,24 +175,6 @@ code {
 .subtitle {
   margin-top: 8px;
   color: #444;
-}
-
-.toolbar {
-  margin-top: 12px;
-}
-
-.toolbar input {
-  width: min(720px, 100%);
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
-}
-
-.toolbar input:focus {
-  outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
 }
 
 /* ===== EBNF Definition Styles ===== */
@@ -189,8 +266,21 @@ details[open] > .ebnf-toggle::before {
     border-color: #666;
   }
 
-  section {
+  .grammar-section {
     border-top-color: #333;
+  }
+
+  .section-header:hover {
+    background: #1e1e1e;
+  }
+
+  .section-header h2 {
+    color: #e0e0e0;
+  }
+
+  .section-chevron,
+  .rule-count {
+    color: #888;
   }
 
   .toolbar input {
@@ -202,6 +292,21 @@ details[open] > .ebnf-toggle::before {
   .toolbar input:focus {
     border-color: #4da6ff;
     box-shadow: 0 0 0 2px rgba(77, 166, 255, 0.2);
+  }
+
+  .toolbar-btn {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #e0e0e0;
+  }
+
+  .toolbar-btn:hover {
+    background: #333;
+    border-color: #666;
+  }
+
+  .toolbar-btn:active {
+    background: #444;
   }
 
   footer {
@@ -225,6 +330,19 @@ details[open] > .ebnf-toggle::before {
     padding: 16px 12px;
   }
 
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar input {
+    width: 100%;
+  }
+
+  .toolbar-actions {
+    justify-content: flex-start;
+  }
+
   .rule h3 {
     font-size: 14px;
   }
@@ -232,5 +350,9 @@ details[open] > .ebnf-toggle::before {
   .ebnf-code {
     font-size: 12px;
     padding: 10px 12px;
+  }
+
+  .section-header h2 {
+    font-size: 1.2em;
   }
 }

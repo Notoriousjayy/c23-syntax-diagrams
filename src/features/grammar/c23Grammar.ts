@@ -13,11 +13,11 @@ import * as RR from "@prantlf/railroad-diagrams/lib/index.mjs";
 //   "Class constructor X cannot be invoked without 'new'"
 //
 // `callOrNew` lets us treat everything as a callable, regardless of how it is exported.
-function callOrNew(Ctor, ...args) {
+function callOrNew(Ctor: any, ...args: any[]) {
   try {
     return Ctor(...args);
   } catch (e) {
-    if (e instanceof TypeError && /without 'new'/.test(e.message)) {
+    if (e instanceof TypeError && /without 'new'/.test((e as Error).message)) {
       return new Ctor(...args);
     }
     throw e;
@@ -25,23 +25,23 @@ function callOrNew(Ctor, ...args) {
 }
 
 // Wrapped primitives (use these throughout the file)
-const Diagram    = (...a) => callOrNew(RR.Diagram, ...a);
-const Sequence   = (...a) => callOrNew(RR.Sequence, ...a);
-const Choice     = (...a) => callOrNew(RR.Choice, ...a);
-const Optional   = (...a) => callOrNew(RR.Optional, ...a);
-const OneOrMore  = (...a) => callOrNew(RR.OneOrMore, ...a);
-const ZeroOrMore = (...a) => callOrNew(RR.ZeroOrMore, ...a);
-const Terminal   = (...a) => callOrNew(RR.Terminal, ...a);
-const NonTerminal = (...a) => callOrNew(RR.NonTerminal, ...a);
-const Stack      = (...a) => callOrNew(RR.Stack, ...a);
-const Comment    = (...a) => callOrNew(RR.Comment, ...a);
+const Diagram    = (...a: any[]) => callOrNew(RR.Diagram, ...a);
+const Sequence   = (...a: any[]) => callOrNew(RR.Sequence, ...a);
+const Choice     = (...a: any[]) => callOrNew(RR.Choice, ...a);
+const Optional   = (...a: any[]) => callOrNew(RR.Optional, ...a);
+const OneOrMore  = (...a: any[]) => callOrNew(RR.OneOrMore, ...a);
+const ZeroOrMore = (...a: any[]) => callOrNew(RR.ZeroOrMore, ...a);
+const Terminal   = (...a: any[]) => callOrNew(RR.Terminal, ...a);
+const NonTerminal = (...a: any[]) => callOrNew(RR.NonTerminal, ...a);
+const Stack      = (...a: any[]) => callOrNew(RR.Stack, ...a);
+const Comment    = (...a: any[]) => callOrNew(RR.Comment, ...a);
 
-const T  = (s) => Terminal(s);
-const NT = (s) => NonTerminal(s);
+const T  = (s: string) => Terminal(s);
+const NT = (s: string) => NonTerminal(s);
 
 // --- Grammar rules (diagram factories) ----------------------------------------
 
-const rules = new Map();
+const rules = new Map<string, () => any>();
 
 // ===== A.2 Lexical grammar (condensed) =====
 
@@ -154,29 +154,6 @@ rules.set("generic-association", () =>
   )
 );
 
-// argument-expression-list: assignment-expression ( , assignment-expression )*
-rules.set("argument-expression-list", () =>
-  Diagram(
-    Sequence(
-      NT("assignment-expression"),
-      ZeroOrMore(Sequence(T(","), NT("assignment-expression")))
-    )
-  )
-);
-
-// compound-literal: ( storage-class-specifiers? type-name ) braced-initializer
-rules.set("compound-literal", () =>
-  Diagram(
-    Sequence(
-      T("("),
-      Optional(NT("storage-class-specifiers")),
-      NT("type-name"),
-      T(")"),
-      NT("braced-initializer")
-    )
-  )
-);
-
 // postfix-expression (diagram-friendly):
 // (primary-expression | compound-literal) postfix-suffix*
 rules.set("postfix-expression", () => {
@@ -205,21 +182,7 @@ rules.set("unary-operator", () =>
   )
 );
 
-// cast-expression (diagram-friendly):
-// ( (type-name) )* unary-expression
-rules.set("cast-expression", () =>
-  Diagram(
-    Sequence(
-      ZeroOrMore(Sequence(T("("), NT("type-name"), T(")"))),
-      NT("unary-expression")
-    )
-  )
-);
-
 // unary-expression (diagram-friendly, flattened):
-// prefix-op* ( postfix-expression | unary-operator cast-expression )
-// | sizeof ( type-name )
-// | alignof ( type-name )
 rules.set("unary-expression", () => {
   const prefixOps = ZeroOrMore(Choice(0, T("++"), T("--"), T("sizeof")));
   const core =
@@ -237,8 +200,18 @@ rules.set("unary-expression", () => {
   );
 });
 
+// cast-expression (diagram-friendly):
+rules.set("cast-expression", () =>
+  Diagram(
+    Sequence(
+      ZeroOrMore(Sequence(T("("), NT("type-name"), T(")"))),
+      NT("unary-expression")
+    )
+  )
+);
+
 // precedence-chain helper: BASE ( (op) BASE )*
-function chain(base, ops) {
+function chain(base: string, ops: string[]) {
   return Sequence(
     NT(base),
     ZeroOrMore(Sequence(Choice(0, ...ops.map(T)), NT(base)))
@@ -257,7 +230,6 @@ rules.set("logical-AND-expression",    () => Diagram(chain("inclusive-OR-express
 rules.set("logical-OR-expression",     () => Diagram(chain("logical-AND-expression", ["||"])));
 
 // conditional-expression:
-// logical-OR-expression ( ? expression : conditional-expression )?
 rules.set("conditional-expression", () =>
   Diagram(
     Sequence(
@@ -278,7 +250,6 @@ rules.set("assignment-operator", () =>
 );
 
 // assignment-expression (diagram-friendly):
-// conditional-expression | unary-expression assignment-operator assignment-expression
 rules.set("assignment-expression", () =>
   Diagram(
     Choice(0,
@@ -300,7 +271,6 @@ rules.set("expression", () =>
 
 // constant-expression: conditional-expression
 rules.set("constant-expression", () => Diagram(NT("conditional-expression")));
-
 
 // ===== A.3.2 Declarations (condensed where needed) =====
 
@@ -397,8 +367,6 @@ rules.set("struct-or-union-specifier", () =>
   )
 );
 
-rules.set("struct-or-union", () => Diagram(Choice(0, T("struct"), T("union"))));
-
 rules.set("member-declaration-list", () =>
   Diagram(OneOrMore(NT("member-declaration")))
 );
@@ -417,24 +385,6 @@ rules.set("member-declaration", () =>
 rules.set("specifier-qualifier-list", () =>
   Diagram(
     OneOrMore(Sequence(NT("type-specifier-qualifier"), Optional(NT("attribute-specifier-sequence"))))
-  )
-);
-
-rules.set("member-declarator-list", () =>
-  Diagram(
-    Sequence(
-      NT("member-declarator"),
-      ZeroOrMore(Sequence(T(","), NT("member-declarator")))
-    )
-  )
-);
-
-rules.set("member-declarator", () =>
-  Diagram(
-    Choice(0,
-      NT("declarator"),
-      Sequence(Optional(NT("declarator")), T(":"), NT("constant-expression"))
-    )
   )
 );
 
@@ -465,8 +415,6 @@ rules.set("enumerator", () =>
   )
 );
 
-rules.set("enum-type-specifier", () => Diagram(Sequence(T(":"), NT("specifier-qualifier-list"))));
-
 rules.set("atomic-type-specifier", () =>
   Diagram(Sequence(T("_Atomic"), T("("), NT("type-name"), T(")")))
 );
@@ -478,10 +426,6 @@ rules.set("typeof-specifier", () =>
       Sequence(T("typeof_unqual"), T("("), NT("typeof-specifier-argument"), T(")"))
     )
   )
-);
-
-rules.set("typeof-specifier-argument", () =>
-  Diagram(Choice(0, NT("expression"), NT("type-name")))
 );
 
 rules.set("type-qualifier", () =>
@@ -520,7 +464,6 @@ rules.set("pointer", () =>
 );
 
 // direct-declarator (diagram-friendly):
-// base ( array-suffix | function-suffix )*
 rules.set("direct-declarator", () => {
   const base = Choice(0,
     Sequence(NT("identifier"), Optional(NT("attribute-specifier-sequence"))),
@@ -528,13 +471,9 @@ rules.set("direct-declarator", () => {
   );
 
   const arrayBracket = Choice(0,
-    // [ type-qualifier-list? assignment-expression? ]
     Sequence(Optional(NT("type-qualifier-list")), Optional(NT("assignment-expression"))),
-    // [ static type-qualifier-list? assignment-expression ]
     Sequence(T("static"), Optional(NT("type-qualifier-list")), NT("assignment-expression")),
-    // [ type-qualifier-list static assignment-expression ]
     Sequence(NT("type-qualifier-list"), T("static"), NT("assignment-expression")),
-    // [ type-qualifier-list? * ]
     Sequence(Optional(NT("type-qualifier-list")), T("*"))
   );
 
@@ -588,7 +527,6 @@ rules.set("abstract-declarator", () =>
 );
 
 // direct-abstract-declarator (diagram-friendly):
-// ( abstract-declarator ) | suffixes*
 rules.set("direct-abstract-declarator", () => {
   const base = Choice(0,
     Sequence(T("("), NT("abstract-declarator"), T(")")),
@@ -677,10 +615,6 @@ rules.set("unlabeled-statement", () =>
       Sequence(Optional(NT("attribute-specifier-sequence")), NT("jump-statement"))
     )
   )
-);
-
-rules.set("primary-block", () =>
-  Diagram(Choice(0, NT("compound-statement"), NT("selection-statement"), NT("iteration-statement")))
 );
 
 rules.set("compound-statement", () =>
@@ -854,6 +788,7 @@ rules.set("pp-tokens", () =>
 rules.set("replacement-list", () =>
   Diagram(Optional(NT("pp-tokens")))
 );
+
 // --- React/TS integration exports --------------------------------------------
 
 export type SectionId = "lexical" | "expressions" | "declarations" | "statements" | "external" | "preprocessor";
@@ -868,6 +803,7 @@ export const SECTION_ORDER: SectionId[] = [
   "external",
   "preprocessor"
 ];
+
 export const SECTION_TITLES: Record<SectionId, string> = {
   lexical: "Lexical Grammar",
   expressions: "Expressions",
@@ -876,6 +812,7 @@ export const SECTION_TITLES: Record<SectionId, string> = {
   external: "External Definitions",
   preprocessor: "Preprocessing Directives",
 };
+
 export const SECTION_RULES: Record<SectionId, RuleName[]> = {
   "lexical": [
     "token",
@@ -996,4 +933,9 @@ export function createRuleDiagram(name: RuleName): any {
     return Diagram(Comment(`No factory defined for ${name}`));
   }
   return factory();
+}
+
+// Export rules map for grammar coverage checking
+export function getRuleNames(): string[] {
+  return Array.from(rules.keys());
 }

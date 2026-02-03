@@ -10,6 +10,10 @@ interface RuleDiagramProps {
 /**
  * Renders a railroad diagram for a C23 grammar rule,
  * along with its EBNF definition displayed below.
+ * 
+ * Security note: SVG is generated locally from deterministic factories.
+ * No untrusted user input is processed. If external grammar loading is
+ * added in the future, implement defensive sanitization.
  */
 export function RuleDiagram({ name }: RuleDiagramProps) {
   const svg = useMemo(() => {
@@ -27,6 +31,7 @@ export function RuleDiagram({ name }: RuleDiagramProps) {
       <div
         className="svgwrap"
         // SVG is generated locally from deterministic factories.
+        // Trust boundary: no untrusted input is processed here.
         dangerouslySetInnerHTML={{ __html: svg }}
       />
 
